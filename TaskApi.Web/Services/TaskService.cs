@@ -8,28 +8,23 @@ namespace TaskApi.Web.Services;
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
+    private readonly TaskProcessingService _taskProcessingService;
 
-    public TaskService(ITaskRepository taskRepository)
+    public TaskService(ITaskRepository taskRepository, TaskProcessingService taskProcessingService)
     {
         _taskRepository = taskRepository;
+        _taskProcessingService = taskProcessingService;
     }
     
     public async Task<Guid> CreateTaskAsync()
     {
         var taskId = await _taskRepository.CreateTaskAsync();
-        _ = UpdateTaskStatusAsync(taskId);
+        _ = _taskProcessingService.UpdateTaskStatusAsync(taskId);
         return taskId;
     }
 
     public async Task<TaskItem?> GetTaskAsync(Guid id)
     {
         return await _taskRepository.GetTaskAsync(id);
-    }
-    
-    private async Task UpdateTaskStatusAsync(Guid taskId)
-    {
-        await _taskRepository.UpdateTaskStatusAsync(taskId, TaskStatusEnum.Running);
-        await Task.Delay(TimeSpan.FromMinutes(2));
-        await _taskRepository.UpdateTaskStatusAsync(taskId, TaskStatusEnum.Finished);
     }
 }

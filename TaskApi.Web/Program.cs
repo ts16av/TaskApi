@@ -16,6 +16,8 @@ builder.Services.AddDbContext<TaskApiDbContext>(options => options.UseNpgsql(con
 
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddSingleton<TaskProcessingService>();
+builder.Services.AddHostedService(p => p.GetRequiredService<TaskProcessingService>());
 
 var app = builder.Build();
 
